@@ -2,7 +2,7 @@
 This repo contains Yocto 5.0 (scarthgap) custom layer
 for NXP  NXP LS1046A Freeway Board  
 See [LS1046A Freeway Board](https://privateisland.tech/dev/yocto-frwy-ls1046a)  
-** This project is working under Ubuntu 24.04 ++
+** This project is working under Ubuntu 24.04 **
 ## Check out the GIT repo's 
 ```bash
 cd /projects
@@ -27,9 +27,9 @@ source poky/oe-init-build-env bld_ls1046afrwy
 ```
 Modify our "conf/local.conf" file to set MACHINE="ls1046afrwy"  
 Add "/build/yocto/meta-freescale" to "conf/bblayers.conf".  
-`bitbake-layers add-layer /projects/yocto/meta-freescale`
+`bitbake-layers add-layer /projects/yocto/meta-freescale`  
 Try to build  
-`bitbake core-image-minimal`
+`bitbake core-image-minimal`  
 Unfortunately, we ran into an error while compiling linux-qoriq. Disable the MXC GPU driver (MXC_GPU_VIV) in the kernel and rebuild.
 ```
 bitbake linux-qoriq -c menuconfig
