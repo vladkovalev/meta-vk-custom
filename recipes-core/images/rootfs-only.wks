@@ -1,0 +1,2 @@
+bootloader --ptable msdos
+part /	--source rootfs --fstype=ext4 --label rootfs --align 16384 --extra-space 200M

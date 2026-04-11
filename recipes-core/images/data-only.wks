@@ -1,0 +1,2 @@
+bootloader --ptable msdos
+part /data	--source empty --fstype=ext4 --label data --align 16384 --size 4096

@@ -1,0 +1,10 @@
+tmp/
+build*/
+*.swp
+*.swo
+*~
+.cache/
+.idea/
+.vscode/
+__pycache__/
+*.pyc
