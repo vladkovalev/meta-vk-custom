@@ -1,4 +1,10 @@
 # meta-vk-custom
+This repo contains Yocto 5.0 (scarthgap) custom layer
+for NXP  NXP LS1046A Freeway Board
+See [LS1046A Freeway Board](https://privateisland.tech/dev/yocto-frwy-ls1046a)
+**This project is working under Ubuntu 24.04 ++
+## Check out the GIT repo's 
+```bash
 cd /projects
 mkdir yocto
 cd yocto/
@@ -18,20 +24,43 @@ cd meta-openembedded/
 git checkout scarthgap
 cd ..
 source poky/oe-init-build-env bld_ls1046afrwy
-
-bitbake core-image-minimal
+```
+Modify our "conf/local.conf" file to set MACHINE="ls1046afrwy"
+Add "/build/yocto/meta-freescale" to "conf/bblayers.conf".
+`bitbake-layers add-layer /projects/yocto/meta-freescale`
+Try to build
+`bitbake core-image-minimal`
+Unfortunately, we ran into an error while compiling linux-qoriq. Disable the MXC GPU driver (MXC_GPU_VIV) in the kernel and rebuild.
+```
 bitbake linux-qoriq -c menuconfig
 bitbake linux-qoriq -c compile -f
 bitbake core-image-minimal
-
+```
+##Add custom layer 
+```
 bitbake-layers show-layers
 bitbake-layers add-layer /projects/yocto/meta-openembedded/meta-oe
 bitbake-layers add-layer /projects/yocto/meta-openembedded/meta-python
 bitbake-layers add-layer /projects/yocto/meta-openembedded/meta-networking
-bitbake-layers create-layer meta-vk-custom
-bitbake-layers show-layers
+clone git://github.com/vladkovalev/meta-vk-custom
 
-bitbake core-image-minimal-rootfsonly #serach for output tmp/deploy/images/ls1046afrwy
+#bitbake-layers create-layer meta-vk-custom
+bitbake-layers show-layers
+```
+## Creating artefacts 
+```bitbake core-image-minimal-rootfsonly
 bitbake data-image
 bitbake core-image-minimal-rootfs-data
+```
+## possibly u_boot args values
+```bash
+setenv bootargs 'console=ttyS0,115200 root=/dev/ram0 earlycon=uart8250,mmio,0x21c0500 mtdparts=1550000.spi:1m(rcw),15m(u-boot),48m(kernel.itb);7e800000.flash:16m(nand_uboot),48m(nand_kernel),448m(nand_free)'
+setenv bootargs 'console=ttyS0,115200 root=LABEL=rootfs rootfstype=ext4 rootwait rw earlycon=uart8250,mmio,0x21c0500 mtdparts=1550000.spi:1m(rcw),15m(u-boot),48m(kernel.itb);7e800000.flash:16m(nand_uboot),48m(nand_kernel),448m(nand_free)'
+setenv bootargs_label  'root=LABEL=rootfs rootfstype=ext4 rootwait rw'
+setenv bootargs_direct 'root=/dev/mmcblk0p1 rootfstype=ext4 rootwait rw'
+
+# To use label:
+setenv bootargs "${bootargs_label}"
+```
+
 
