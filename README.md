@@ -2,7 +2,7 @@
 This repo contains Yocto 5.0 (scarthgap) custom layer
 for NXP  NXP LS1046A Freeway Board  
 See [LS1046A Freeway Board](https://privateisland.tech/dev/yocto-frwy-ls1046a)  
-** This project is working under Ubuntu 24.04 **
+**This project is working under Ubuntu 24.04**
 ## Check out the GIT repo's 
 ```bash
 cd /projects
