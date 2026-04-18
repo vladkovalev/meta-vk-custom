@@ -1,0 +1,18 @@
+# LS1046A Shared Environment
+# Stored as FIT image (shared-env.itb) on shared flash
+# Read by all cores at boot via U-Boot
+
+# Global boot cycle counter — incremented by Master after successful boot
+boot_cycle=0
+
+# Number of cores in this system (1 or 3)
+system_cores=3
+
+# Role override — empty = use rotation formula
+# Set to core number to force that core as Master (e.g. master_override=2)
+master_override=
+
+# Shared rootfs OTA state
+ota_rootfs_slot=A
+ota_rootfs_pending=0
+ota_rootfs_confirmed=0
