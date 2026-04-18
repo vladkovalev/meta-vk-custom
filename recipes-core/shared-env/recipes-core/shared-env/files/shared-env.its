@@ -1,0 +1,29 @@
+/dts-v1/;
+
+/ {
+    description = "LS1046A Shared Environment";
+    #address-cells = <1>;
+
+    images {
+        env {
+            description = "Shared system environment";
+            data = /incbin/("shared-env.txt");
+            type = "firmware";
+            arch = "arm64";
+            compression = "none";
+
+            hash-1 {
+                algo = "sha256";
+            };
+        };
+    };
+
+    configurations {
+        default = "conf-1";
+
+        conf-1 {
+            description = "Shared env configuration";
+            firmware = "env";
+        };
+    };
+};
