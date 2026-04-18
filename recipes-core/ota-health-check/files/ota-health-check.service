@@ -1,0 +1,14 @@
+[Unit]
+Description=OTA Boot Health Check and Confirmation
+After=multi-user.target network.target core-role-manager.service
+Wants=network.target
+Requires=core-role-manager.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 30
+ExecStart=/usr/bin/ota-health-check
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
