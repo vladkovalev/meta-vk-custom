@@ -1,0 +1,6 @@
+# Per-core data partition
+# Flashed to each core's dedicated flash independently
+# Persistent — never touched by OTA
+
+bootloader --ptable gpt
+part /data --source empty --fstype=ext4 --label data --align 16384 --size 4096
