@@ -62,5 +62,16 @@ setenv bootargs_direct 'root=/dev/mmcblk0p1 rootfstype=ext4 rootwait rw'
 # To use label:
 setenv bootargs "${bootargs_label}"
 ```
-
-
+# Include FIT image config in local.conf
+```bash
+echo 'require conf/machine/ls1046a-fitimage.inc' >> conf/local.conf
+```
+# Build artifacts
+```bash
+bitbake core-image-ota              # → rootfs.wic.bz2 + rootfs.ext4
+bitbake factory-provision-image      # → A/B partitioned eMMC (factory only)
+bitbake shared-env-image             # → shared-env.itb
+bitbake data-image-core              # → per-core data partition
+bitbake u-boot-boot-script           # → boot-ota.scr
+bitbake virtual/kernel               # → fitImage (kernel + dtb + initramfs)
+```
