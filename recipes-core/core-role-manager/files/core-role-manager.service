@@ -1,0 +1,13 @@
+[Unit]
+Description=Parse and export core role identity from kernel cmdline
+DefaultDependencies=no
+After=local-fs.target
+Before=ota-health-check.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/core-role-manager
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
