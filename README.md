@@ -36,7 +36,7 @@ bitbake linux-qoriq -c menuconfig
 bitbake linux-qoriq -c compile -f
 bitbake core-image-minimal
 ```
-## Add custom layer 
+# Add custom layer 
 ```
 bitbake-layers show-layers
 bitbake-layers add-layer /projects/yocto/meta-openembedded/meta-oe
@@ -47,7 +47,7 @@ clone git://github.com/vladkovalev/meta-vk-custom
 #bitbake-layers create-layer meta-vk-custom
 bitbake-layers show-layers
 ```
-## Creating artefacts 
+## Build artifacts
 ```bitbake core-image-minimal-rootfsonly
 bitbake data-image
 bitbake core-image-minimal-rootfs-data
@@ -66,7 +66,7 @@ setenv bootargs "${bootargs_label}"
 ```bash
 echo 'require conf/machine/ls1046a-fitimage.inc' >> conf/local.conf
 ```
-# Build artifacts
+## Build artifacts
 ```bash
 bitbake core-image-ota              # → rootfs.wic.bz2 + rootfs.ext4
 bitbake factory-provision-image      # → A/B partitioned eMMC (factory only)
