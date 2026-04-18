@@ -1,0 +1,14 @@
+# Factory provisioning layout for LS1046A shared eMMC
+# Creates both rootfs slots and shared environment partition
+# Used ONCE at factory. OTA updates write to individual partitions.
+#
+# Layout:
+#   Partition 1: rootfsA (512M, populated with rootfs)
+#   Partition 2: rootfsB (512M, populated with same rootfs)
+#   Partition 3: shared-env (16M, empty ext4 for shared-env.itb extraction)
+
+bootloader --ptable gpt
+
+part / --source rootfs --fstype=ext4 --label rootfsA --align 16384 --fixed-size 512M
+part   --source rootfs --fstype=ext4 --label rootfsB --align 16384 --fixed-size 512M
+part   --source empty  --fstype=ext4 --label shared-env --align 4096 --fixed-size 16M
