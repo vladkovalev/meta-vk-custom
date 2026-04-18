@@ -1,0 +1,7 @@
+# Populated at boot by core-role-manager service
+# Source this file: . /etc/core-role.conf
+CORE_ID=
+CORE_ROLE=
+BOOT_CYCLE=
+FIT_SLOT=
+ROOTFS_SLOT=
