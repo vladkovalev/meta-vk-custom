@@ -1,0 +1,86 @@
+#!/bin/sh
+# LS1046A OTA initramfs init
+# Reads core identity from kernel cmdline, mounts correct rootfs slot,
+# then switch_root to real rootfs.
+
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+
+# Parse kernel cmdline
+CMDLINE=$(cat /proc/cmdline)
+
+get_param() {
+    echo "$CMDLINE" | tr ' ' '\n' | grep "^${1}=" | cut -d= -f2
+}
+
+CORE_ID=$(get_param "vk.core_id")
+CORE_ROLE=$(get_param "vk.core_role")
+ROOT_PARAM=$(get_param "root")
+
+# Extract LABEL= value if present, otherwise use as device path
+case "$ROOT_PARAM" in
+    LABEL=*)
+        ROOTFS_LABEL=$(echo "$ROOT_PARAM" | sed 's/LABEL=//')
+        ;;
+    *)
+        ROOTFS_LABEL="rootfsA"
+        ;;
+esac
+
+echo "=== LS1046A OTA Init ==="
+echo "Core: ${CORE_ID:-unknown} Role: ${CORE_ROLE:-unknown}"
+echo "RootFS label: ${ROOTFS_LABEL}"
+
+# Wait for block devices to settle
+RETRY=0
+while [ $RETRY -lt 10 ]; do
+    if ls /dev/mmcblk*p* >/dev/null 2>&1; then
+        break
+    fi
+    echo "Waiting for block devices... ($RETRY)"
+    sleep 1
+    RETRY=$((RETRY + 1))
+done
+
+# Find partition by label
+ROOTFS_DEV=""
+for dev in /dev/mmcblk*p*; do
+    [ -b "$dev" ] || continue
+    # Try blkid first (busybox blkid), fall back to e2label
+    label=""
+    if command -v blkid >/dev/null 2>&1; then
+        label=$(blkid "$dev" 2>/dev/null | grep -o 'LABEL="[^"]*"' | cut -d'"' -f2)
+    fi
+    if [ -z "$label" ] && command -v e2label >/dev/null 2>&1; then
+        label=$(e2label "$dev" 2>/dev/null || true)
+    fi
+    if [ "$label" = "$ROOTFS_LABEL" ]; then
+        ROOTFS_DEV="$dev"
+        break
+    fi
+done
+
+if [ -z "$ROOTFS_DEV" ]; then
+    echo "WARNING: Cannot find rootfs with label '${ROOTFS_LABEL}'"
+    echo "Falling back to /dev/mmcblk0p1"
+    ROOTFS_DEV="/dev/mmcblk0p1"
+fi
+
+echo "Mounting ${ROOTFS_DEV} as rootfs..."
+mkdir -p /mnt/root
+mount -t ext4 -o ro "${ROOTFS_DEV}" /mnt/root
+
+if [ ! -x /mnt/root/sbin/init ]; then
+    echo "FATAL: /sbin/init not found on rootfs. Dropping to shell."
+    umount /mnt/root 2>/dev/null
+    exec /bin/sh
+fi
+
+# Move virtual filesystems and switch to real rootfs
+mount --move /proc /mnt/root/proc
+mount --move /sys /mnt/root/sys
+mount --move /dev /mnt/root/dev
+
+echo "Switching to real rootfs..."
+exec switch_root /mnt/root /sbin/init
